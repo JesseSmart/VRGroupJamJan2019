@@ -6,6 +6,7 @@ using Valve.VR;
 public class Hand : MonoBehaviour
 {
     public GameObject grabPoint;
+    public GameObject vrArea;
 
     public enum SelectedHand
     {
@@ -19,6 +20,7 @@ public class Hand : MonoBehaviour
     public GameObject heldItem;
     float cd;
     public float timeheld;
+    bool canTeleport = false;
 
     void Start()
     {
@@ -60,6 +62,100 @@ public class Hand : MonoBehaviour
                         print("toggle drop");
                     }
                 }
+            }
+        }
+
+
+        if (selected == SelectedHand.Left)
+        {
+            if (SteamVR_Input._default.inActions.MenuClick.GetState(SteamVR_Input_Sources.LeftHand))
+            {
+                
+                RaycastHit hit;
+                if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, 100.0f))
+                {
+                    GetComponent<LineRenderer>().SetPosition(0, transform.position);
+                    GetComponent<LineRenderer>().SetPosition(1, hit.point);
+
+                    if (hit.transform.gameObject.CompareTag("Floor"))
+                    {
+                        GetComponent<LineRenderer>().startColor = Color.blue;
+                        GetComponent<LineRenderer>().endColor = Color.blue;
+                    }
+                    else
+                    {
+                        GetComponent<LineRenderer>().startColor = Color.red;
+                        GetComponent<LineRenderer>().endColor = Color.red;
+                    }
+                }
+                else
+                {
+                    GetComponent<LineRenderer>().SetPosition(0, transform.position);
+                    GetComponent<LineRenderer>().SetPosition(1, transform.forward * 100);
+                    GetComponent<LineRenderer>().startColor = Color.red;
+                    GetComponent<LineRenderer>().endColor = Color.red;
+                }
+            }
+            if (SteamVR_Input._default.inActions.MenuClick.GetStateUp(SteamVR_Input_Sources.LeftHand))
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, 100))
+                {
+                    if (hit.transform.gameObject.CompareTag("Floor"))
+                    {
+                        vrArea.transform.position = hit.point;
+                    }
+                }
+
+                GetComponent<LineRenderer>().SetPosition(0, transform.position + Vector3.up * 10000);
+                GetComponent<LineRenderer>().SetPosition(1, hit.point + Vector3.up * 10000);
+            }
+        }
+    
+        if (selected == SelectedHand.Right)
+        {
+            if (SteamVR_Input._default.inActions.MenuClick.GetState(SteamVR_Input_Sources.RightHand))
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, 100.0f))
+                {
+                    GetComponent<LineRenderer>().SetPosition(0, transform.position);
+                    GetComponent<LineRenderer>().SetPosition(1, hit.point);
+
+                    if (hit.transform.gameObject.CompareTag("Floor"))
+                    {
+                        GetComponent<LineRenderer>().startColor = Color.blue;
+                        GetComponent<LineRenderer>().endColor = Color.blue;
+                    }
+                    else
+                    {
+                        GetComponent<LineRenderer>().startColor = Color.red;
+                        GetComponent<LineRenderer>().endColor = Color.red;
+                    }
+                }
+                else
+                {
+                    GetComponent<LineRenderer>().SetPosition(0, transform.position);
+                    GetComponent<LineRenderer>().SetPosition(1, transform.forward * 100);
+                    GetComponent<LineRenderer>().startColor = Color.red;
+                    GetComponent<LineRenderer>().endColor = Color.red;
+                }
+            }
+            if (SteamVR_Input._default.inActions.MenuClick.GetStateUp(SteamVR_Input_Sources.RightHand))
+            {
+                print("release");
+
+                RaycastHit hit;
+                if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, 100.0f))
+                {
+                    if (hit.transform.gameObject.CompareTag("Floor"))
+                    {
+                        vrArea.transform.position = hit.point;
+                    }
+                }
+
+                GetComponent<LineRenderer>().SetPosition(0, transform.position + Vector3.up * 10000);
+                GetComponent<LineRenderer>().SetPosition(1, hit.point + Vector3.up * 10000);
             }
         }
 
@@ -145,4 +241,6 @@ public class Hand : MonoBehaviour
             }
         }
     }
+
+   
 }
