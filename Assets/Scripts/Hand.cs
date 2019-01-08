@@ -112,7 +112,11 @@ public class Hand : MonoBehaviour
                 {
                     if (hit.transform.gameObject.CompareTag("Floor"))
                     {
-                        vrArea.transform.position = hit.point;
+                        RaycastHit down;
+                        if(Physics.Raycast(new Ray(hit.point + (Vector3.up * 0.1f), Vector3.down), out down, 100))
+                        {
+                            vrArea.transform.position = down.point;
+                        }
                     }
                 }
 
@@ -159,7 +163,11 @@ public class Hand : MonoBehaviour
                 {
                     if (hit.transform.gameObject.CompareTag("Floor"))
                     {
-                        vrArea.transform.position = hit.point;
+                        RaycastHit down;
+                        if (Physics.Raycast(new Ray(hit.point + (Vector3.up * 0.1f), Vector3.down), out down, 100))
+                        {
+                            vrArea.transform.position = down.point;
+                        }
                     }
                 }
 
@@ -188,6 +196,10 @@ public class Hand : MonoBehaviour
                     }
                 }
             }
+        }
+        else
+        {
+            holdingItem = false;
         }
 
         /*if (SteamVR_Input._default.inActions.Teleport.GetStateDown(SteamVR_Input_Sources.Any))
