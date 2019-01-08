@@ -15,7 +15,6 @@ public class GrabObject : MonoBehaviour
     Vector3 lastPos = Vector3.zero;
 
     public bool canGrab = true;
-    private GameObject throwObject;
 
     void Start()
     {
@@ -60,6 +59,7 @@ public class GrabObject : MonoBehaviour
             GetComponent<NavMeshAgent>().enabled = false;
         }
 
+        rigidBody.isKinematic = false;
         controller.holdingItem = true;
         controller.heldItem = gameObject;
 
@@ -76,12 +76,6 @@ public class GrabObject : MonoBehaviour
     public void Release(Hand controller)
     {
         print("Release");
-        if (throwObject != null)
-        {
-            Object.Destroy(gameObject);
-            GameObject throwObj = Instantiate(throwObject, transform.position, transform.rotation);
-            throwObj.GetComponent<Rigidbody>().velocity = velo;
-        }
 
         if (rigidBody != null)
         {
