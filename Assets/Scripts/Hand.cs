@@ -7,6 +7,7 @@ public class Hand : MonoBehaviour
 {
     public GameObject grabPoint;
     public GameObject vrArea;
+    public GameObject hand;
 
     public enum SelectedHand
     {
@@ -20,7 +21,6 @@ public class Hand : MonoBehaviour
     public GameObject heldItem;
     float cd;
     public float timeheld;
-    bool canTeleport = false;
 
     void Start()
     {
@@ -30,7 +30,16 @@ public class Hand : MonoBehaviour
     void Update()
     {
         if (holdingItem)
+        {
             timeheld += Time.deltaTime;
+            hand.SetActive(false);
+            //heldItem.transform.position = Vector3.Lerp(heldItem.transform.position, grabPoint.transform.position, Time.deltaTime * 5);
+        }
+        else
+        {
+            hand.SetActive(true);
+        }
+
         cd -= Time.deltaTime;
 
         if (selected == SelectedHand.Left && SteamVR_Input._default.inActions.GrabPinch.GetStateDown(SteamVR_Input_Sources.LeftHand))
@@ -156,6 +165,28 @@ public class Hand : MonoBehaviour
 
                 GetComponent<LineRenderer>().SetPosition(0, transform.position + Vector3.up * 10000);
                 GetComponent<LineRenderer>().SetPosition(1, hit.point + Vector3.up * 10000);
+            }
+        }
+
+        if (heldItem != null)
+        {
+            if (heldItem.CompareTag("Tool"))
+            {
+                if (selected == SelectedHand.Left)
+                {
+                    if (SteamVR_Input._default.inActions.Teleport.GetStateDown(SteamVR_Input_Sources.LeftHand))
+                    {
+                        heldItem.GetComponent<Gadgets>().Activate();
+                    }
+                }
+
+                if (selected == SelectedHand.Right)
+                {
+                    if (SteamVR_Input._default.inActions.Teleport.GetStateDown(SteamVR_Input_Sources.RightHand))
+                    {
+                        heldItem.GetComponent<Gadgets>().Activate();
+                    }
+                }
             }
         }
 

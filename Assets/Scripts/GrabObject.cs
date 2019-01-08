@@ -1,19 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class GrabObject : MonoBehaviour
 {
     protected Rigidbody rigidBody;
-    protected bool originalKinematicState;
+    protected bool originalGravityState;
     protected Transform originalParent;
 
-    private Hand cont;
+    public Hand cont;
 
     Vector3 velo = Vector3.zero;
     Vector3 lastPos = Vector3.zero;
 
     public bool canGrab = true;
+    private GameObject throwObject;
 
     void Start()
     {
@@ -22,17 +24,26 @@ public class GrabObject : MonoBehaviour
 
     void Update()
     {
-        if(cont != null)
+        if (cont != null)
         {
             velo = (cont.transform.position - lastPos) / Time.deltaTime;
             lastPos = cont.transform.position;
         }
     }
 
+    void FixedUpdate()
+    {
+        if (cont != null)
+        {
+            rigidBody.velocity = (cont.grabPoint.transform.position - transform.position) * 50;
+            rigidBody.MoveRotation(cont.grabPoint.transform.rotation);
+        }
+    }
+
     void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
-        originalKinematicState = rigidBody.isKinematic;
+        originalGravityState = rigidBody.useGravity;
         originalParent = transform.parent;
     }
 
@@ -44,52 +55,57 @@ public class GrabObject : MonoBehaviour
         }
         print("Grab");
 
+        if (GetComponent<NavMeshAgent>())
+        {
+            GetComponent<NavMeshAgent>().enabled = false;
+        }
+
         controller.holdingItem = true;
         controller.heldItem = gameObject;
 
-        rigidBody.isKinematic = true;
+        if (rigidBody != null)
+        {
+            rigidBody.useGravity = false;
+        }
 
         canGrab = false;
-
-        transform.SetParent(controller.grabPoint.transform);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
 
         cont = controller;
     }
 
     public void Release(Hand controller)
     {
-        if (transform.parent == controller.grabPoint.gameObject.transform)
+        print("Release");
+        if (throwObject != null)
         {
-            print("Release");
-            rigidBody.isKinematic = originalKinematicState;
+            Object.Destroy(gameObject);
+            GameObject throwObj = Instantiate(throwObject, transform.position, transform.rotation);
+            throwObj.GetComponent<Rigidbody>().velocity = velo;
+        }
 
-            if (originalParent != controller.grabPoint.gameObject.transform)
-            {
-                transform.SetParent(originalParent);
-            }
-            else
-            {
-                transform.SetParent(null);
-            }
+        if (rigidBody != null)
+        {
+            rigidBody.useGravity = originalGravityState;
+        }
 
-            if (cont != null)
+        if (cont != null)
+        {
+            if (rigidBody != null)
             {
                 rigidBody.velocity = velo * 1;
             }
 
-            lastPos = Vector3.zero;
-            velo = Vector3.zero;
-
             cont.timeheld = 0;
             cont.holdingItem = false;
             cont.heldItem = null;
-            cont = null;
-
-            canGrab = true;
-            
         }
+
+        lastPos = Vector3.zero;
+        velo = Vector3.zero;
+            
+        cont = null;
+
+        canGrab = true;
     }
 }
 

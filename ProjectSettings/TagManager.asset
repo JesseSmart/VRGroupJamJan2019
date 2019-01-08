@@ -8,6 +8,7 @@ TagManager:
   - FxTemporaire
   - Tool
   - Floor
+  - Face
   layers:
   - Default
   - TransparentFX
