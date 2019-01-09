@@ -8,11 +8,14 @@ public class TennisBall : MonoBehaviour
 
     private AudioSource audio;
     public AudioClip thoompSound;
+    public AudioClip throwSound;
 
     void Start()
     {
         audio = GetComponent<AudioSource>();
-
+        audio.clip = throwSound;
+        audio.Play();
+        audio.clip = thoompSound;
     }
 
     void Update()

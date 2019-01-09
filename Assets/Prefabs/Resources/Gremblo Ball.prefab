@@ -170,6 +170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnObj: {fileID: 0}
   thoompSound: {fileID: 8300000, guid: df3f5c5ccbcc0394eb126242b26ae9c2, type: 3}
+  throwSound: {fileID: 8300000, guid: cc952382ebb1fc8459ffa826d187aa3e, type: 3}
 --- !u!1001 &6806997367766394012
 PrefabInstance:
   m_ObjectHideFlags: 0

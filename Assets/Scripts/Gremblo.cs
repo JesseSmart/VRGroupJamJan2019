@@ -15,9 +15,20 @@ public class Gremblo : MonoBehaviour
     public int size = 0;
     public bool explodeOnGrab = false;
 
+    private AudioSource audio;
+    public AudioClip foundAudio;
+    public AudioClip hidingAudio;
+    public AudioClip landAudio;
+    private bool madeSound;
+
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audio = GetComponent<AudioSource>();
+        audio.clip = landAudio;
+        audio.Play();
 
         if (nextSize == null)
         {
@@ -39,6 +50,16 @@ public class Gremblo : MonoBehaviour
 
             if (hiding)
             {
+                if (!audio.isPlaying)
+                {
+                    if (!madeSound)
+                    {
+                        audio.clip = hidingAudio;
+                        audio.Play();
+                        madeSound = true;
+                    }
+                }
+
                 GetComponentInChildren<Animator>().StopPlayback();
                 GetComponentInChildren<Animator>().Play("Idle");
                 GetComponentInChildren<Animator>().SetBool("Idle", true);
@@ -88,6 +109,11 @@ public class Gremblo : MonoBehaviour
                     {
                         //spook
                         timer += Time.deltaTime;
+                        if (!audio.isPlaying)
+                        {
+                                audio.clip = foundAudio;
+                                audio.Play();
+                        }
                     }
                 }
             }
