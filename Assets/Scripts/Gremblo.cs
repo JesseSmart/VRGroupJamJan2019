@@ -8,18 +8,51 @@ public class Gremblo : MonoBehaviour
     bool grabbed = false;
     public bool hiding;
     public bool foundSpot;
+    public bool dancing;
     public int spot;
     public GameObject nextSize;
     bool a;
     public int size = 0;
+    public bool explodeOnGrab = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        if (nextSize == null)
+        {
+            nextSize = (GameObject)Resources.Load("Gremblo 125 Variant");
+        }
     }
 
     void Update()
     {
+        if (dancing)
+        {
+            GetComponentInChildren<Animator>().StopPlayback();
+            GetComponentInChildren<Animator>().Play("Dance");
+            return;
+        }
+        else
+        {
+            GetComponentInChildren<Animator>().StopPlayback();
+
+            if (hiding)
+            {
+                GetComponentInChildren<Animator>().StopPlayback();
+                GetComponentInChildren<Animator>().Play("Idle");
+                GetComponentInChildren<Animator>().SetBool("Idle", true);
+                GetComponentInChildren<Animator>().SetBool("Run", false);
+            }
+            else
+            {
+                GetComponentInChildren<Animator>().StopPlayback();
+                GetComponentInChildren<Animator>().Play("Run");
+                GetComponentInChildren<Animator>().SetBool("Idle", false);
+                GetComponentInChildren<Animator>().SetBool("Run", true);
+            }
+        }
+
         //being held
         if (!GetComponent<GrabObject>().canGrab)
         {
@@ -29,6 +62,11 @@ public class Gremblo : MonoBehaviour
                 grabbed = true;
                 hiding = false;
                 foundSpot = false;
+            }
+
+            if (explodeOnGrab)
+            {
+                Split();
             }
 
             timer += Time.deltaTime;
@@ -48,17 +86,13 @@ public class Gremblo : MonoBehaviour
                 {
                     if (hiding)
                     {
-                        ////////////////add raycast check
                         //spook
-                        GetComponentInChildren<Renderer>().material.color = Color.red;
                         timer += Time.deltaTime;
                     }
                 }
             }
             else
             {
-                GetComponentInChildren<Renderer>().material.color = Color.blue;
-
                 timer -= Time.deltaTime;
 
                 if (timer <= 0)
@@ -114,7 +148,7 @@ public class Gremblo : MonoBehaviour
                 }
 
                 Vector3 pos0 = transform.position;
-                Vector3 pos1 = GetComponent<NavMeshAgent>().destination;
+                Vector3 pos1 = GameObject.FindObjectOfType<Spots>().spots[spot].transform.position;
                 if (Vector3.Distance(pos0, pos1) < 0.6f)
                 {
                     /////////////set pos if little
@@ -170,6 +204,7 @@ public class Gremblo : MonoBehaviour
                     GetComponent<Rigidbody>().useGravity = false;
                     GetComponent<Rigidbody>().isKinematic = true;
 
+                    transform.position = Vector3.Lerp(transform.position, hit.point, 0.5f);
                 }
             }
         }

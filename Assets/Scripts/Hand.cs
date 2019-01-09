@@ -8,6 +8,7 @@ public class Hand : MonoBehaviour
     public GameObject grabPoint;
     public GameObject vrArea;
     public GameObject hand;
+    public GameObject menu;
 
     public enum SelectedHand
     {
@@ -173,6 +174,28 @@ public class Hand : MonoBehaviour
 
                 GetComponent<LineRenderer>().SetPosition(0, transform.position + Vector3.up * 10000);
                 GetComponent<LineRenderer>().SetPosition(1, hit.point + Vector3.up * 10000);
+            }
+        }
+
+        //left grip click
+        if (selected == SelectedHand.Left)
+        {
+            if (SteamVR_Input._default.inActions.GrabGrip.GetStateDown(SteamVR_Input_Sources.LeftHand))
+            {
+                menu.SetActive(!menu.activeSelf);
+            }
+        }
+        
+        //right grip click
+        if (selected == SelectedHand.Right)
+        {
+            if (SteamVR_Input._default.inActions.GrabGrip.GetState(SteamVR_Input_Sources.RightHand))
+            {
+                menu.SetActive(true);
+            }
+            else
+            {
+                menu.SetActive(false);
             }
         }
 
